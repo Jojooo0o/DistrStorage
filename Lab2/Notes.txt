@@ -1,0 +1,9 @@
+
+Idempotency
+- Idempotency as important concept for reliable systems!
+- Idempotency: running one write 100 times changes always the same (e.g. not appending)
+- IMPORTANT for error prevention in case of error (request sent -> server fails -> request resent)
+
+NFS - Network file system (distributed file system protocol)
+
+RPC - remote procedure call (running some code on different machine)
