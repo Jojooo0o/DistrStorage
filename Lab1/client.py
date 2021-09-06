@@ -8,7 +8,7 @@ MAX_BYTES = 4096
 def selectMode():
     modus = int(input('Insert 1 (String mode) or 2 (Random byte mode):'))
     print(modus)
-    if modus == 1 or modus == 2:
+    if modus == 1 or modus == 2 or modus == 3:
         return modus
     else:
         modus = selectMode()
@@ -27,10 +27,23 @@ def randomBytes():
         return randomBytes()
     print(rand_len.to_bytes(length=4, byteorder=sys.byteorder))
     byte_obj += rand_len.to_bytes(length=4, byteorder=sys.byteorder)
-    return os.urandom(rand_len)
+    byte_obj += os.urandom(rand_len)
+    return byte_obj
     #return str.encode(string) 
 
 
+
+def readFile():
+    filename = input('Define file name: ')
+    try:
+        with open('./'+filename, 'rb') as f:
+            data = f.read()
+            print(type(data))
+            return filename, data
+    except EnvironmentError as e:
+        print(f'Error reading file: {e}')
+        return None
+    
 
 def Main():
     s = socket(AF_INET, SOCK_STREAM)
@@ -39,11 +52,21 @@ def Main():
         s = socket(AF_INET, SOCK_STREAM)
         s.connect(('localhost', 9000))
         modus = selectMode()
+        filename = ''
+        data = bytes()
         if modus == 1:
             data = customInput()
         elif modus == 2:
             data = randomBytes()
+        elif modus == 3:
+            filename, data = readFile()
         s.send(modus.to_bytes(length=1, byteorder=sys.byteorder))
+        if modus == 3:
+            print(f'what:({filename})')
+            s.send(str.encode(filename))
+            feedback = s.recv(2)
+            print(repr(feedback))
+        #print(len(data))
         s.send(data)
 
         s.close()
@@ -51,22 +74,3 @@ def Main():
 
 if __name__ == '__main__':
     Main()
-
-
-# print('Insert string:')
-usr_in = input('Insert custom String: ')
-
-# IS ONE BYTE ONE CHAR?
-usr_in_byte_len = len(usr_in.encode('utf-8'))
-print(f'{str(usr_in_byte_len)}')
-#print(f'You have inserted: "{usr_in}"')
-#print(len(str.encode(usr_in)))
-#print(type(str.encode(usr_in)))
-
-if(len(usr_in) > MAX_BYTES):
-    usr_in = usr_in[:MAX_BYTES]
-
-s.send(str.encode(usr_in))
-#data = s.recv(10000)
-#print(data)
-s.close()
